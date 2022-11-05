@@ -1,7 +1,8 @@
 package main
 
-import "fmt"
+import "github.com/dupreehkuda/balance-microservice/internal/api"
 
 func main() {
-	fmt.Println("initial commit")
+	srv := api.NewByConfig()
+	srv.Run()
 }

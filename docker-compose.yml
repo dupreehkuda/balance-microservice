@@ -1,0 +1,39 @@
+version: '3.9'
+
+networks:
+  default:
+    driver: custom-driver-1
+
+services:
+  api:
+    build:
+      dockerfile: ./Dockerfile
+    container_name: api
+    environment:
+      - DATABASE_URI=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+      - RUN_ADDRESS=${ADDRESS}
+    env_file: .env
+    ports:
+      - '8080:8080'
+    restart: on-failure
+    volumes:
+      - .:/app
+    depends_on:
+      - database
+    networks:
+      - default
+
+  database:
+    image: postgres:latest
+    container_name: psql
+    restart: on-failure
+    env_file: .env
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST}
+    ports:
+      - '5432:5433'
+    networks:
+      - default
