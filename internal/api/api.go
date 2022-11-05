@@ -94,11 +94,16 @@ func (a api) service() http.Handler {
 	r.Use(a.mw.WriteCompressed)
 
 	r.Route("/api/balance", func(r chi.Router) {
-		r.Get("/{account_id}", nil)
-		r.Post("/withdraw", nil)
-		r.Post("/add", nil)
-		r.Post("/transfer", nil)
-		r.Post("/reserve", nil)
+		r.Route("/{account_id}", func(r chi.Router) {
+			r.Use(a.mw.AccountCtx)
+			r.Get("/", a.handlers.GetBalance)
+		})
+
+		r.Post("/withdraw", a.handlers.WithdrawBalance)
+		r.Post("/add", a.handlers.AddFunds)
+		r.Post("/transfer", a.handlers.TransferFunds)
+		r.Post("/reserve", a.handlers.ReserveFunds)
+		r.Post("/cancel", a.handlers.CancelReserve)
 	})
 
 	return r
