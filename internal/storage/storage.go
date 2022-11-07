@@ -23,7 +23,8 @@ CREATE TABLE "orders" (
 	order_id integer UNIQUE PRIMARY KEY,
 	service_id text,
 	account_id text,
-	amount numeric
+	amount numeric,
+	processed bool
 	);
 
   ALTER TABLE orders ADD FOREIGN KEY (account_id) REFERENCES accounts (account_id);

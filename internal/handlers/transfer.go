@@ -32,7 +32,7 @@ func (h handlers) TransferFunds(w http.ResponseWriter, r *http.Request) {
 	case i.ErrNoSuchUser:
 		w.WriteHeader(http.StatusBadRequest)
 		return
-	case i.ErrNotEnoughPoints:
+	case i.ErrNotEnoughFunds:
 		w.WriteHeader(http.StatusPaymentRequired)
 		return
 	case nil:

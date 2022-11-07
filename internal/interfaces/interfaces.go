@@ -1,8 +1,9 @@
 package interfaces
 
 import (
-	"github.com/shopspring/decimal"
 	"net/http"
+
+	"github.com/shopspring/decimal"
 )
 
 type Handlers interface {
@@ -15,6 +16,14 @@ type Handlers interface {
 }
 
 type Stored interface {
+	AddFunds(accountID string, funds decimal.Decimal) error
+	GetBalance(accountID string) ([]byte, error)
+	CheckAccountExistence(accountID string) bool
+	CheckAccountBalance(accountID string, needed decimal.Decimal) (bool, bool)
+	ReserveFunds(targetID, serviceID string, orderID int, funds decimal.Decimal) error
+	TransferFunds(senderID, receiverID string, funds decimal.Decimal) error
+	WithdrawBalance(orderID int) error
+	CancelReserve(orderID int) error
 }
 
 type Actions interface {

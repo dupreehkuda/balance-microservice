@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	i "github.com/dupreehkuda/balance-microservice/internal"
-
 	"go.uber.org/zap"
 )
 
@@ -27,17 +25,7 @@ func (h handlers) CancelReserve(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.actions.CancelReserve(data.OrderID)
-
-	switch err {
-	case i.ErrNoSuchOrder:
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	case i.ErrWrongCredentials:
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		return
-	case nil:
-		return
-	default:
+	if err != nil {
 		h.logger.Error("Error call to actions for cancel", zap.Error(err))
 		w.WriteHeader(http.StatusBadRequest)
 		return

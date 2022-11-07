@@ -35,7 +35,7 @@ func (h handlers) ReserveFunds(w http.ResponseWriter, r *http.Request) {
 	case i.ErrWrongCredentials:
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
-	case i.ErrNotEnoughPoints:
+	case i.ErrNotEnoughFunds:
 		w.WriteHeader(http.StatusPaymentRequired)
 		return
 	case nil:
