@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	i "github.com/dupreehkuda/balance-microservice/internal"
-
 	"go.uber.org/zap"
+
+	i "github.com/dupreehkuda/balance-microservice/internal"
 )
 
 // TransferFunds transfer funds from one account to another
@@ -21,7 +21,7 @@ func (h handlers) TransferFunds(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if data.SenderID != "" && data.ReceiverID != "" {
+	if data.SenderID == "" && data.ReceiverID == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

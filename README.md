@@ -29,3 +29,7 @@ $ make rebuild
 $ go run cmd/main.go -a <port> -d <postgres URI>
 ```
 Без флага `-a` запустится на порте `:8080`. Также эти параметры можно задать через переменные окружения: `RUN_ADDRESS` и `DATABASE_URI`.
+
+### Схема хранения данных (ERD):
+
+![er-diagram](erd.png)

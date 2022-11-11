@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	i "github.com/dupreehkuda/balance-microservice/internal"
-
 	"go.uber.org/zap"
+
+	i "github.com/dupreehkuda/balance-microservice/internal"
 )
 
 // GetBalance gets current accounts balance

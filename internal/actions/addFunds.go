@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// AddFunds adds funds to account
 func (a actions) AddFunds(accountID string, funds decimal.Decimal) error {
 	err := a.storage.AddFunds(accountID, funds)
 	if err != nil {

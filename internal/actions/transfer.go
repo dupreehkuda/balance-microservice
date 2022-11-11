@@ -1,10 +1,12 @@
 package actions
 
 import (
-	i "github.com/dupreehkuda/balance-microservice/internal"
 	"github.com/shopspring/decimal"
+
+	i "github.com/dupreehkuda/balance-microservice/internal"
 )
 
+// TransferFunds checks if sender exists and transfers funds
 func (a actions) TransferFunds(senderID, receiverID string, funds decimal.Decimal) error {
 	exists := a.storage.CheckAccountExistence(senderID)
 	if !exists {

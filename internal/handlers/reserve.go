@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	i "github.com/dupreehkuda/balance-microservice/internal"
-
 	"go.uber.org/zap"
+
+	i "github.com/dupreehkuda/balance-microservice/internal"
 )
 
-// ReserveFunds makes a request to reserve funds on account
+// ReserveFunds makes a request to reserve funds on account and creates order
 func (h handlers) ReserveFunds(w http.ResponseWriter, r *http.Request) {
 	var data reserve
 
@@ -21,7 +21,9 @@ func (h handlers) ReserveFunds(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if data.TargetID != "" {
+	h.logger.Debug("after unmarshal", zap.Any("data", data))
+	if data.TargetID == "" {
+		h.logger.Error("TargetID is empty")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -37,6 +39,9 @@ func (h handlers) ReserveFunds(w http.ResponseWriter, r *http.Request) {
 		return
 	case i.ErrNotEnoughFunds:
 		w.WriteHeader(http.StatusPaymentRequired)
+		return
+	case i.ErrOrderAlreadyExists:
+		w.WriteHeader(http.StatusConflict)
 		return
 	case nil:
 		return

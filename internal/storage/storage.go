@@ -13,21 +13,21 @@ type storage struct {
 }
 
 var schema = `
-CREATE TABLE "accounts" (
+CREATE TABLE IF NOT EXISTS "accounts" (
 	account_id text UNIQUE PRIMARY KEY,
-	funds numeric,
-	on_hold numeric
+	funds numeric default 0,
+	on_hold numeric default 0
 	);
 
-CREATE TABLE "orders" (
-	order_id integer UNIQUE PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS "orders" (
+	order_id bigint UNIQUE PRIMARY KEY,
 	service_id text,
 	account_id text,
 	amount numeric,
-	processed bool
+	processed bool default false
 	);
 
-  ALTER TABLE orders ADD FOREIGN KEY (account_id) REFERENCES accounts (account_id);
+ALTER TABLE orders ADD FOREIGN KEY (account_id) REFERENCES accounts (account_id);
 `
 
 // New creates a new instance of database layer and migrates it

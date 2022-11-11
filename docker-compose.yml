@@ -1,9 +1,5 @@
 version: '3.9'
 
-networks:
-  default:
-    driver: custom-driver-1
-
 services:
   api:
     build:
@@ -20,8 +16,6 @@ services:
       - .:/app
     depends_on:
       - database
-    networks:
-      - default
 
   database:
     image: postgres:latest
@@ -34,6 +28,4 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - DATABASE_HOST=${DB_HOST}
     ports:
-      - '5432:5433'
-    networks:
-      - default
+      - '5432:5432'

@@ -20,6 +20,8 @@ type Stored interface {
 	GetBalance(accountID string) ([]byte, error)
 	CheckAccountExistence(accountID string) bool
 	CheckAccountBalance(accountID string, needed decimal.Decimal) (bool, bool)
+	CheckOrderExistence(orderID int) bool
+	CheckOrderProcessed(orderID int) (bool, bool)
 	ReserveFunds(targetID, serviceID string, orderID int, funds decimal.Decimal) error
 	TransferFunds(senderID, receiverID string, funds decimal.Decimal) error
 	WithdrawBalance(orderID int) error

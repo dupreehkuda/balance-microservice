@@ -1,0 +1,220 @@
+openapi: 3.0.0
+servers:
+  - description: Balance Operations
+    url: http://localhost:8080/api
+info:
+  description: avito-tech api for funds balance microservice
+  version: "1.0.0"
+  title: User balance microservice API
+  contact:
+    email: danyakurach@gmail.com
+tags:
+  - name: Balance
+    description: Operations available on balance
+  - name: Order
+    description: Operations available on orders
+paths:
+  /balance/{account_id}:
+    get:
+      tags:
+        - Balance
+      summary: |
+        Gets account's current balance
+      parameters:
+        - name: account_id
+          in: path
+          description: account id
+          required: true
+          schema:
+            type: string
+            format: string
+      description: |
+        Getting account's current balance
+      responses:
+        '200':
+          description: 'Succsess'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    example: 12345678903
+                  current:
+                    type: number
+                    example: 123.45
+                  on_hold:
+                    type: number
+                    example: 200.10
+        '400':
+          description: 'Account do not exist'
+        '500':
+          description: 'Internal Server Error'
+  /balance/add:
+    post:
+      tags:
+        - Balance
+      summary: Add funds to account
+      description: Adds funds to account exists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeRequest'
+      responses:
+        '200':
+          description: 'Succsess'
+        '400':
+          description: 'Account do not exist'
+        '500':
+          description: 'Internal Server Error'
+  /balance/transfer:
+    post:
+      tags:
+        - Balance
+      summary: Transfers funds P2P
+      description: Tranfers money from one acccount to another
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequest'
+      responses:
+        '200':
+          description: 'Succsess'
+        '400':
+          description: 'Account do not exist'
+        '402':
+          description: 'Not enough funds on senders account'
+        '500':
+          description: 'Internal Server Error'
+  /order/reserve:
+    post:
+      tags:
+        - Order
+      summary: Reserves funds on account and creates order
+      description: Reserves funds on account while withdraw operation is not done. Order should be valid by luhn.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReserveRequest'
+      responses:
+        '201':
+          description: 'Succsess'
+        '400':
+          description: 'Account do not exist'
+        '402':
+          description: 'Not enough funds on account'
+        '409':
+          description: 'Order already exists'
+        '500':
+          description: 'Internal Server Error'
+  /order/withdraw:
+    post:
+      tags:
+        - Order
+      summary: Withdraws existing order
+      description: Withdraws funds from account if there is enough amount available
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WithdrawalnCancel'
+      responses:
+        '200':
+          description: 'Succsess'
+        '400':
+          description: 'Order do not exist'
+        '402':
+          description: 'Not enough amount on balance'
+        '406':
+          description: 'Order is already processed'
+        '500':
+          description: 'Internal Server Error'
+  /order/cancel:
+    post:
+      tags:
+        - Order
+      summary: Cancels existing order
+      description: Cancels existing order and removes accounts on_hold balance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WithdrawalnCancel'
+      responses:
+        '201':
+          description: 'Succsess'
+        '400':
+          description: 'Order do not exist'
+        '406':
+          description: 'Order is already processed'
+        '402':
+          description: 'Not enough funds on account'
+        '500':
+          description: 'Internal Server Error'
+components:
+  schemas:
+    ChangeRequest:
+      type: object
+      required:
+        - account_id
+        - amount
+      properties:
+        account_id:
+          type: string
+          example: "12345678903"
+        amount:
+          type: number
+          example: 100.11
+    TransferRequest:
+      type: object
+      required:
+        - sender_id
+        - receiver_id
+        - amount
+      properties:
+        sender_id:
+          type: string
+          example: "12345678903"
+        receiver_id:
+          type: string
+          example: "12345678903"
+        amount:
+          type: number
+          example: 100.11
+    ReserveRequest:
+      type: object
+      required:
+        - target_id
+        - service_id
+        - order_id
+        - amount
+      properties:
+        target_id:
+          type: string
+          example: "12345678903"
+        service_id:
+          type: string
+          example: "12345678903"
+        order_id:
+          type: integer
+          example: 12345678903
+        amount:
+          type: number
+          example: 100.11
+    WithdrawalnCancel:
+      type: object
+      required:
+        - order_id
+      properties:
+        order_id:
+          type: integer
+          example: 12345678903

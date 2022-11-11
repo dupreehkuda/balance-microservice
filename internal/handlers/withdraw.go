@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"go.uber.org/zap"
+
+	i "github.com/dupreehkuda/balance-microservice/internal"
 )
 
 // WithdrawBalance commits early created reserve request
@@ -25,7 +27,15 @@ func (h handlers) WithdrawBalance(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.actions.WithdrawBalance(data.OrderID)
-	if err != nil {
+
+	switch err {
+	case i.ErrNoSuchOrder:
+		w.WriteHeader(http.StatusBadRequest)
+	case i.ErrOrderProcessed:
+		w.WriteHeader(http.StatusNotAcceptable)
+	case nil:
+		return
+	default:
 		h.logger.Error("Error call to actions for withdraw", zap.Error(err))
 		w.WriteHeader(http.StatusBadRequest)
 		return
