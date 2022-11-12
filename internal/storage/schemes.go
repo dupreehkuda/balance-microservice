@@ -7,3 +7,8 @@ type getResponse struct {
 	Current decimal.Decimal `json:"current"`
 	OnHold  decimal.Decimal `json:"on_hold"`
 }
+
+type accountingData struct {
+	ServiceID string
+	Sum       decimal.Decimal
+}

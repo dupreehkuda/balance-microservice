@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+
 	pgxdecimal "github.com/jackc/pgx-shopspring-decimal"
 	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
@@ -97,4 +98,24 @@ func (s storage) CheckOrderProcessed(orderID int) (bool, bool) {
 	}
 
 	return true, true
+}
+
+// CheckReportExistence checks if report is present
+func (s storage) CheckReportExistence(repID string) bool {
+	conn, err := s.pool.Acquire(context.Background())
+	if err != nil {
+		s.logger.Error("Error while acquiring connection", zap.Error(err))
+		return false
+	}
+	defer conn.Release()
+
+	var rID string
+
+	conn.QueryRow(context.Background(), "select report_id from reports where report_id = $1", repID).Scan(&rID)
+
+	if rID == "" {
+		return false
+	}
+
+	return true
 }

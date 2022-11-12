@@ -19,11 +19,6 @@ $ make compose
 $ make compose-down
 ```
 
-Пересобрать контейнеры можно командой 
-```sh 
-$ make rebuild
-```
-
 Для того чтобы запустить приложение не используя Docker, необходимо подтянуть зависимости и запустить с флагами:
 ```sh
 $ go run cmd/main.go -a <port> -d <postgres URI>

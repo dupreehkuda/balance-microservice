@@ -24,8 +24,15 @@ CREATE TABLE IF NOT EXISTS "orders" (
 	service_id text,
 	account_id text,
 	amount numeric,
+	creation_date timestamptz,
+	processed_date timestamptz,
 	processed bool default false
 	);
+
+CREATE TABLE IF NOT EXISTS "reports" (
+    report_id text UNIQUE PRIMARY KEY,
+    report text NOT NULL
+);
 
 ALTER TABLE orders ADD FOREIGN KEY (account_id) REFERENCES accounts (account_id);
 `

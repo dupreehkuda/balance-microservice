@@ -9,4 +9,6 @@ var (
 	ErrNoSuchOrder        = errors.New("there is no such order")
 	ErrOrderAlreadyExists = errors.New("order already exists")
 	ErrOrderProcessed     = errors.New("order already processed")
+	ErrNoData             = errors.New("no data for selection")
+	ErrNoSuchReport       = errors.New("not existing report")
 )

@@ -7,10 +7,6 @@ compose:
 	docker-compose up -d
 
 .PHONY:
-rebuild:
-	docker-compose build --no-cache
-
-.PHONY:
 compose-down:
 	docker-compose down --remove-orphans
 

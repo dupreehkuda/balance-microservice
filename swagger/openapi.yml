@@ -13,13 +13,15 @@ tags:
     description: Operations available on balance
   - name: Order
     description: Operations available on orders
+  - name: Report
+    description: Operations available on accounting reports
 paths:
-  /balance/{account_id}:
+  /balance/get/{account_id}:
     get:
       tags:
         - Balance
       summary: |
-        Gets account's current balance
+        'Gets account's current balance'
       parameters:
         - name: account_id
           in: path
@@ -29,10 +31,10 @@ paths:
             type: string
             format: string
       description: |
-        Getting account's current balance
+        'Getting account's current balance'
       responses:
         '200':
-          description: 'Succsess'
+          description: 'Success'
           content:
             application/json:
               schema:
@@ -55,17 +57,17 @@ paths:
     post:
       tags:
         - Balance
-      summary: Add funds to account
-      description: Adds funds to account exists
+      summary: 'Add funds to account'
+      description: 'Adds funds to account exists'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChangeRequest'
+              $ref: '#/components/schemas/Add'
       responses:
         '200':
-          description: 'Succsess'
+          description: 'Success'
         '400':
           description: 'Account do not exist'
         '500':
@@ -74,17 +76,17 @@ paths:
     post:
       tags:
         - Balance
-      summary: Transfers funds P2P
-      description: Tranfers money from one acccount to another
+      summary: 'Transfers funds P2P'
+      description: 'Transfers money from one account to another'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TransferRequest'
+              $ref: '#/components/schemas/Transfer'
       responses:
         '200':
-          description: 'Succsess'
+          description: 'Success'
         '400':
           description: 'Account do not exist'
         '402':
@@ -95,17 +97,17 @@ paths:
     post:
       tags:
         - Order
-      summary: Reserves funds on account and creates order
-      description: Reserves funds on account while withdraw operation is not done. Order should be valid by luhn.
+      summary: 'Reserves funds on account and creates order'
+      description: 'Reserves funds on account while withdraw operation is not done. Order should be valid by luhn.'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReserveRequest'
+              $ref: '#/components/schemas/Reserve'
       responses:
         '201':
-          description: 'Succsess'
+          description: 'Success'
         '400':
           description: 'Account do not exist'
         '402':
@@ -118,8 +120,8 @@ paths:
     post:
       tags:
         - Order
-      summary: Withdraws existing order
-      description: Withdraws funds from account if there is enough amount available
+      summary: 'Withdraws existing order'
+      description: 'Withdraws funds from account if there is enough amount available'
       requestBody:
         required: true
         content:
@@ -128,7 +130,7 @@ paths:
               $ref: '#/components/schemas/WithdrawalnCancel'
       responses:
         '200':
-          description: 'Succsess'
+          description: 'Success'
         '400':
           description: 'Order do not exist'
         '402':
@@ -141,8 +143,8 @@ paths:
     post:
       tags:
         - Order
-      summary: Cancels existing order
-      description: Cancels existing order and removes accounts on_hold balance
+      summary: 'Cancels existing order'
+      description: 'Cancels existing order and removes accounts on_hold balance'
       requestBody:
         required: true
         content:
@@ -150,19 +152,70 @@ paths:
             schema:
               $ref: '#/components/schemas/WithdrawalnCancel'
       responses:
-        '201':
-          description: 'Succsess'
+        '200':
+          description: 'Success'
         '400':
-          description: 'Order do not exist'
-        '406':
-          description: 'Order is already processed'
+          description: 'Order does not exist'
         '402':
           description: 'Not enough funds on account'
+        '406':
+          description: 'Order is already processed'
+        '500':
+          description: 'Internal Server Error'
+  /accounting/add:
+    post:
+      tags:
+        - Report
+      summary: 'Makes report or returns existing'
+      description: 'Makes accounting report or returns an existing one'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Accounting'
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    example: '11-2022'
+                  link:
+                    type: string
+                    example: 'http://localhost:8080/accounting/bef361c46d'
+        '400':
+          description: 'No data for report'
+        '500':
+          description: 'Internal Server Error'
+  /accounting/get/{report_id}:
+    get:
+      tags:
+        - Report
+      summary: Makes report or returns existing
+      description: Makes accounting report or returns an existing one
+      parameters:
+        - name: report_id
+          in: path
+          description: report id
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '200':
+          description: 'Success'
+        '400':
+          description: 'Report does not exist'
         '500':
           description: 'Internal Server Error'
 components:
   schemas:
-    ChangeRequest:
+    Add:
       type: object
       required:
         - account_id
@@ -174,7 +227,7 @@ components:
         amount:
           type: number
           example: 100.11
-    TransferRequest:
+    Transfer:
       type: object
       required:
         - sender_id
@@ -190,7 +243,7 @@ components:
         amount:
           type: number
           example: 100.11
-    ReserveRequest:
+    Reserve:
       type: object
       required:
         - target_id
@@ -218,3 +271,15 @@ components:
         order_id:
           type: integer
           example: 12345678903
+    Accounting:
+      type: object
+      required:
+        - month
+        - year
+      properties:
+        month:
+          type: string
+          example: "11"
+        year:
+          type: string
+          example: "2022"

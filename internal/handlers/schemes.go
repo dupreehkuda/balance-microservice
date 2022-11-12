@@ -23,3 +23,13 @@ type addFunds struct {
 type withdrawal struct {
 	OrderID int `json:"order_id"`
 }
+
+type accounting struct {
+	Month string `json:"month"`
+	Year  string `json:"year"`
+}
+
+type linkResponce struct {
+	Date string `json:"date"`
+	Link string `json:"link"`
+}

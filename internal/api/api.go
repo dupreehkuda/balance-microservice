@@ -95,8 +95,8 @@ func (a api) service() http.Handler {
 
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/balance", func(r chi.Router) {
-			r.Route("/{account_id}", func(r chi.Router) {
-				r.Use(a.mw.AccountCtx)
+			r.Route("/get/{account_id}", func(r chi.Router) {
+				r.Use(a.mw.ParamCtx)
 				r.Get("/", a.handlers.GetBalance)
 			})
 
@@ -108,6 +108,15 @@ func (a api) service() http.Handler {
 			r.Post("/reserve", a.handlers.ReserveFunds)
 			r.Post("/withdraw", a.handlers.WithdrawBalance)
 			r.Post("/cancel", a.handlers.CancelReserve)
+		})
+
+		r.Route("/accounting", func(r chi.Router) {
+			r.Route("/get/{report_id}", func(r chi.Router) {
+				r.Use(a.mw.ParamCtx)
+				r.Get("/", a.handlers.GetReport)
+			})
+
+			r.Post("/add", a.handlers.GetReportLink)
 		})
 	})
 

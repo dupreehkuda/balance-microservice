@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"time"
 
 	pgxdecimal "github.com/jackc/pgx-shopspring-decimal"
 	"github.com/shopspring/decimal"
@@ -30,7 +31,7 @@ func (s storage) WithdrawBalance(orderID int) error {
 
 	tx.QueryRow(ctx, "select account_id, amount from orders where order_id = $1;", orderID).Scan(&aID, &amount)
 	tx.Exec(ctx, "update accounts set on_hold = on_hold - $2 where account_id = $1;", aID, amount)
-	tx.Exec(ctx, "update orders set processed = true where order_id = $1;", orderID)
+	tx.Exec(ctx, "update orders set processed = true, processed_date = $2 where order_id = $1;", orderID, time.Now())
 
 	err = tx.Commit(ctx)
 	if err != nil {

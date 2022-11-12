@@ -1,0 +1,433 @@
+{
+  "openapi": "3.0.0",
+  "servers": [
+    {
+      "description": "Balance Operations",
+      "url": "http://localhost:8080/api"
+    }
+  ],
+  "info": {
+    "description": "avito-tech api for funds balance microservice",
+    "version": "1.0.0",
+    "title": "User balance microservice API",
+    "contact": {
+      "email": "danyakurach@gmail.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "Balance",
+      "description": "Operations available on balance"
+    },
+    {
+      "name": "Order",
+      "description": "Operations available on orders"
+    },
+    {
+      "name": "Report",
+      "description": "Operations available on accounting reports"
+    }
+  ],
+  "paths": {
+    "/balance/get/{account_id}": {
+      "get": {
+        "tags": [
+          "Balance"
+        ],
+        "summary": "'Gets account's current balance'\n",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "description": "account id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "'Getting account's current balance'\n",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user_id": {
+                      "type": "integer",
+                      "example": 12345678903
+                    },
+                    "current": {
+                      "type": "number",
+                      "example": 123.45
+                    },
+                    "on_hold": {
+                      "type": "number",
+                      "example": 200.1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Account do not exist"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/balance/add": {
+      "post": {
+        "tags": [
+          "Balance"
+        ],
+        "summary": "Add funds to account",
+        "description": "Adds funds to account exists",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Add"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Account do not exist"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/balance/transfer": {
+      "post": {
+        "tags": [
+          "Balance"
+        ],
+        "summary": "Transfers funds P2P",
+        "description": "Transfers money from one account to another",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Transfer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Account do not exist"
+          },
+          "402": {
+            "description": "Not enough funds on senders account"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/order/reserve": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "Reserves funds on account and creates order",
+        "description": "Reserves funds on account while withdraw operation is not done. Order should be valid by luhn.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reserve"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Account do not exist"
+          },
+          "402": {
+            "description": "Not enough funds on account"
+          },
+          "409": {
+            "description": "Order already exists"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/order/withdraw": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "Withdraws existing order",
+        "description": "Withdraws funds from account if there is enough amount available",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawalnCancel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Order do not exist"
+          },
+          "402": {
+            "description": "Not enough amount on balance"
+          },
+          "406": {
+            "description": "Order is already processed"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/order/cancel": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "Cancels existing order",
+        "description": "Cancels existing order and removes accounts on_hold balance",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawalnCancel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Order does not exist"
+          },
+          "402": {
+            "description": "Not enough funds on account"
+          },
+          "406": {
+            "description": "Order is already processed"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/accounting/add": {
+      "post": {
+        "tags": [
+          "Report"
+        ],
+        "summary": "Makes report or returns existing",
+        "description": "Makes accounting report or returns an existing one",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Accounting"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "string",
+                      "example": "11-2022"
+                    },
+                    "link": {
+                      "type": "string",
+                      "example": "http://localhost:8080/accounting/bef361c46d"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No data for report"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/accounting/get/{report_id}": {
+      "get": {
+        "tags": [
+          "Report"
+        ],
+        "summary": "Makes report or returns existing",
+        "description": "Makes accounting report or returns an existing one",
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "description": "report id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Report does not exist"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Add": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "amount"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "example": "12345678903"
+          },
+          "amount": {
+            "type": "number",
+            "example": 100.11
+          }
+        }
+      },
+      "Transfer": {
+        "type": "object",
+        "required": [
+          "sender_id",
+          "receiver_id",
+          "amount"
+        ],
+        "properties": {
+          "sender_id": {
+            "type": "string",
+            "example": "12345678903"
+          },
+          "receiver_id": {
+            "type": "string",
+            "example": "12345678903"
+          },
+          "amount": {
+            "type": "number",
+            "example": 100.11
+          }
+        }
+      },
+      "Reserve": {
+        "type": "object",
+        "required": [
+          "target_id",
+          "service_id",
+          "order_id",
+          "amount"
+        ],
+        "properties": {
+          "target_id": {
+            "type": "string",
+            "example": "12345678903"
+          },
+          "service_id": {
+            "type": "string",
+            "example": "12345678903"
+          },
+          "order_id": {
+            "type": "integer",
+            "example": 12345678903
+          },
+          "amount": {
+            "type": "number",
+            "example": 100.11
+          }
+        }
+      },
+      "WithdrawalnCancel": {
+        "type": "object",
+        "required": [
+          "order_id"
+        ],
+        "properties": {
+          "order_id": {
+            "type": "integer",
+            "example": 12345678903
+          }
+        }
+      },
+      "Accounting": {
+        "type": "object",
+        "required": [
+          "month",
+          "year"
+        ],
+        "properties": {
+          "month": {
+            "type": "string",
+            "example": "11"
+          },
+          "year": {
+            "type": "string",
+            "example": "2022"
+          }
+        }
+      }
+    }
+  }
+}

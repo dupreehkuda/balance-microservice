@@ -13,6 +13,8 @@ type Handlers interface {
 	ReserveFunds(w http.ResponseWriter, r *http.Request)
 	TransferFunds(w http.ResponseWriter, r *http.Request)
 	WithdrawBalance(w http.ResponseWriter, r *http.Request)
+	GetReportLink(w http.ResponseWriter, r *http.Request)
+	GetReport(w http.ResponseWriter, r *http.Request)
 }
 
 type Stored interface {
@@ -26,6 +28,10 @@ type Stored interface {
 	TransferFunds(senderID, receiverID string, funds decimal.Decimal) error
 	WithdrawBalance(orderID int) error
 	CancelReserve(orderID int) error
+	GetReportLink(month, year string) (string, error)
+	WriteReport(repID, report string) error
+	CheckReportExistence(repID string) bool
+	ReadReport(repID string) (string, error)
 }
 
 type Actions interface {
@@ -35,10 +41,12 @@ type Actions interface {
 	WithdrawBalance(orderID int) error
 	ReserveFunds(targetID, serviceID string, orderID int, funds decimal.Decimal) error
 	CancelReserve(orderID int) error
+	GetReportLink(month, year string) (string, error)
+	GetReport(reportID string) (string, error)
 }
 
 type Middleware interface {
 	CheckCompression(next http.Handler) http.Handler
 	WriteCompressed(next http.Handler) http.Handler
-	AccountCtx(next http.Handler) http.Handler
+	ParamCtx(next http.Handler) http.Handler
 }

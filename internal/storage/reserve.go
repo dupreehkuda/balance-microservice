@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"time"
 
 	pgxdecimal "github.com/jackc/pgx-shopspring-decimal"
 	"github.com/shopspring/decimal"
@@ -25,7 +26,7 @@ func (s storage) ReserveFunds(targetID, serviceID string, orderID int, funds dec
 		return err
 	}
 
-	_, err = tx.Exec(ctx, "insert into orders (order_id, service_id, account_id, amount) values ($1, $2, $3, $4) on conflict do nothing;", orderID, serviceID, targetID, funds)
+	_, err = tx.Exec(ctx, "insert into orders (order_id, service_id, account_id, amount, creation_date) values ($1, $2, $3, $4, $5) on conflict do nothing;", orderID, serviceID, targetID, funds, time.Now())
 	if err != nil {
 		s.logger.Debug("first reserve exec", zap.Error(err))
 	}

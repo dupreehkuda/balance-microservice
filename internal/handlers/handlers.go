@@ -20,3 +20,5 @@ func New(storage i.Stored, processor i.Actions, logger *zap.Logger) *handlers {
 		logger:  logger,
 	}
 }
+
+// todo: write unit-tests

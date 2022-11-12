@@ -18,3 +18,5 @@ func New(storage i.Stored, logger *zap.Logger) *actions {
 		logger:  logger,
 	}
 }
+
+// todo: write unit-tests
