@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
@@ -39,6 +40,9 @@ ALTER TABLE orders ADD FOREIGN KEY (account_id) REFERENCES accounts (account_id)
 
 // New creates a new instance of database layer and migrates it
 func New(path string, logger *zap.Logger) *storage {
+	// Wait until database initialize in container
+	time.Sleep(time.Second * 2)
+
 	config, err := pgxpool.ParseConfig(path)
 	if err != nil {
 		logger.Error("Unable to parse config", zap.Error(err))

@@ -38,7 +38,7 @@ func (h handlers) GetReportLink(w http.ResponseWriter, r *http.Request) {
 
 		body, err := json.Marshal(linkResponce{
 			Date: fmt.Sprintf("%s-%s", data.Month, data.Year),
-			Link: fmt.Sprintf("http://%s/%s", r.Host, result),
+			Link: fmt.Sprintf("http://%s/accounting/get/%s", r.Host, result),
 		})
 
 		if err != nil {
