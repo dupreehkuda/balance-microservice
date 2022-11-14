@@ -52,7 +52,7 @@ func (s storage) GetReportLink(month, year string) (string, error) {
 
 // makeCSV converts a slice of accountingData and returns a CSV string
 func makeCSV(data []accountingData) string {
-	var dataToCSV [][]string
+	var dataToCSV = [][]string{{"Service", "Sum"}}
 
 	for _, val := range data {
 		dataToCSV = append(dataToCSV, []string{val.ServiceID, val.Sum.String()})
