@@ -33,3 +33,10 @@ type linkResponce struct {
 	Date string `json:"date"`
 	Link string `json:"link"`
 }
+
+type history struct {
+	User      string `json:"userID"`
+	SortBy    string `json:"sortBy"`
+	SortOrder string `json:"sortOrder"`
+	Quantity  int    `json:"quantity"`
+}

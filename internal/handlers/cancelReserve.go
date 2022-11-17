@@ -37,7 +37,7 @@ func (h handlers) CancelReserve(w http.ResponseWriter, r *http.Request) {
 		return
 	default:
 		h.logger.Error("Error call to actions for cancel", zap.Error(err))
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 }

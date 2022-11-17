@@ -15,6 +15,7 @@ type Handlers interface {
 	WithdrawBalance(w http.ResponseWriter, r *http.Request)
 	GetReportLink(w http.ResponseWriter, r *http.Request)
 	GetReport(w http.ResponseWriter, r *http.Request)
+	GetHistory(w http.ResponseWriter, r *http.Request)
 }
 
 type Stored interface {
@@ -32,6 +33,8 @@ type Stored interface {
 	WriteReport(repID, report string) error
 	CheckReportExistence(repID string) bool
 	ReadReport(repID string) (string, error)
+	GetHistory(targetID, params string) ([]byte, error)
+	DeleteUnprocessed()
 }
 
 type Actions interface {
@@ -43,6 +46,8 @@ type Actions interface {
 	CancelReserve(orderID int) error
 	GetReportLink(month, year string) (string, error)
 	GetReport(reportID string) (string, error)
+	GetHistory(targetId, sortOrder, sortBy string, quantity int) ([]byte, error)
+	RunDeletion()
 }
 
 type Middleware interface {

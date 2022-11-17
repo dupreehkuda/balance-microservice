@@ -13,12 +13,9 @@ type handlers struct {
 }
 
 // New creates new instance of handlers
-func New(storage i.Stored, processor i.Actions, logger *zap.Logger) *handlers {
+func New(processor i.Actions, logger *zap.Logger) *handlers {
 	return &handlers{
-		storage: storage,
 		actions: processor,
 		logger:  logger,
 	}
 }
-
-// todo: write unit-tests

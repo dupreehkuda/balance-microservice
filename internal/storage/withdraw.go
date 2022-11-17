@@ -2,6 +2,8 @@ package storage
 
 import (
 	"context"
+	"fmt"
+	"strconv"
 	"time"
 
 	pgxdecimal "github.com/jackc/pgx-shopspring-decimal"
@@ -32,6 +34,9 @@ func (s storage) WithdrawBalance(orderID int) error {
 	tx.QueryRow(ctx, "select account_id, amount from orders where order_id = $1;", orderID).Scan(&aID, &amount)
 	tx.Exec(ctx, "update accounts set on_hold = on_hold - $2 where account_id = $1;", aID, amount)
 	tx.Exec(ctx, "update orders set processed = true, processed_date = $2 where order_id = $1;", orderID, time.Now())
+
+	comment := fmt.Sprintf("Payed %s for order №%v", amount.String(), orderID)
+	tx.Exec(ctx, "insert into history (operation, account_id, correspondent, funds, comment, processed_at) values ('payment', $1, $2, $3, $4, $5) on conflict do nothing;", aID, strconv.Itoa(orderID), amount, comment, time.Now())
 
 	err = tx.Commit(ctx)
 	if err != nil {

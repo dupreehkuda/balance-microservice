@@ -8,6 +8,6 @@ var Logger *zap.Logger
 
 // InitializeLogger initializes new logger instance
 func InitializeLogger() *zap.Logger {
-	Logger, _ = zap.NewProduction()
+	Logger, _ = zap.NewDevelopment()
 	return Logger
 }

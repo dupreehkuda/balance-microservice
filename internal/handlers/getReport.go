@@ -29,7 +29,7 @@ func (h handlers) GetReport(w http.ResponseWriter, r *http.Request) {
 		return
 	default:
 		h.logger.Error("Error call to actions for getting", zap.Error(err))
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 }

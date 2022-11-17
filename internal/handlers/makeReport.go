@@ -31,7 +31,7 @@ func (h handlers) GetReportLink(w http.ResponseWriter, r *http.Request) {
 
 	switch err {
 	case i.ErrNoData:
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusNoContent)
 		return
 	case nil:
 		w.WriteHeader(http.StatusOK)

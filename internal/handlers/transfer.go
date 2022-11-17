@@ -21,7 +21,7 @@ func (h handlers) TransferFunds(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if data.SenderID == "" && data.ReceiverID == "" {
+	if data.SenderID == "" || data.ReceiverID == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -39,7 +39,7 @@ func (h handlers) TransferFunds(w http.ResponseWriter, r *http.Request) {
 		return
 	default:
 		h.logger.Error("Error call to actions for transfer", zap.Error(err))
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 }

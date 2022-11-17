@@ -15,6 +15,8 @@ tags:
     description: Operations available on orders
   - name: Report
     description: Operations available on accounting reports
+  - name: History
+    description: Operations available on service history
 paths:
   /balance/get/{account_id}:
     get:
@@ -50,7 +52,7 @@ paths:
                     type: number
                     example: 200.10
         '400':
-          description: 'Account do not exist'
+          description: 'Account do not exist or bad input'
         '500':
           description: 'Internal Server Error'
   /balance/add:
@@ -69,7 +71,7 @@ paths:
         '200':
           description: 'Success'
         '400':
-          description: 'Account do not exist'
+          description: 'Account do not exist or bad input'
         '500':
           description: 'Internal Server Error'
   /balance/transfer:
@@ -88,7 +90,7 @@ paths:
         '200':
           description: 'Success'
         '400':
-          description: 'Account do not exist'
+          description: 'Sender account do not exist or bad input'
         '402':
           description: 'Not enough funds on senders account'
         '500':
@@ -109,7 +111,7 @@ paths:
         '201':
           description: 'Success'
         '400':
-          description: 'Account do not exist'
+          description: 'Account do not exist or bad input'
         '402':
           description: 'Not enough funds on account'
         '409':
@@ -127,14 +129,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WithdrawalnCancel'
+              $ref: '#/components/schemas/WithdrawalAndCancel'
       responses:
         '200':
           description: 'Success'
         '400':
-          description: 'Order do not exist'
-        '402':
-          description: 'Not enough amount on balance'
+          description: 'Order do not exist or bad input'
         '406':
           description: 'Order is already processed'
         '500':
@@ -150,14 +150,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WithdrawalnCancel'
+              $ref: '#/components/schemas/WithdrawalAndCancel'
       responses:
         '200':
           description: 'Success'
         '400':
-          description: 'Order does not exist'
-        '402':
-          description: 'Not enough funds on account'
+          description: 'Order does not exist or bad input'
         '406':
           description: 'Order is already processed'
         '500':
@@ -188,8 +186,10 @@ paths:
                   link:
                     type: string
                     example: 'http://localhost:8080/accounting/bef361c46d'
-        '400':
+        '204':
           description: 'No data for report'
+        '400':
+          description: 'Bad request'
         '500':
           description: 'Internal Server Error'
   /accounting/get/{report_id}:
@@ -210,7 +210,49 @@ paths:
         '200':
           description: 'Success'
         '400':
-          description: 'Report does not exist'
+          description: 'Report does not exist or bad input'
+        '500':
+          description: 'Internal Server Error'
+  /history:
+    post:
+      tags:
+        - History
+      summary: 'Gets user`s history'
+      description: 'Gets user`s history sorted and limited'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/History'
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operation:
+                    type: string
+                    example: "transfer"
+                  correspondent:
+                    type: string
+                    example: "some-user"
+                  funds:
+                    type: number
+                    example: 200.10
+                  comment:
+                    type: string
+                    example: "Received 200.10 from another-user"
+                  processed_at:
+                    type: string
+                    format: date-time
+                    example: 2022-11-17T10:00:03Z
+        '204':
+          description: 'No operations on account'
+        '400':
+          description: 'Wrong parameters'
         '500':
           description: 'Internal Server Error'
 components:
@@ -223,7 +265,7 @@ components:
       properties:
         account_id:
           type: string
-          example: "12345678903"
+          example: "user1"
         amount:
           type: number
           example: 100.11
@@ -236,10 +278,10 @@ components:
       properties:
         sender_id:
           type: string
-          example: "12345678903"
+          example: "user1"
         receiver_id:
           type: string
-          example: "12345678903"
+          example: "user2"
         amount:
           type: number
           example: 100.11
@@ -253,17 +295,17 @@ components:
       properties:
         target_id:
           type: string
-          example: "12345678903"
+          example: "user1"
         service_id:
           type: string
-          example: "12345678903"
+          example: "Cleaning"
         order_id:
           type: integer
           example: 12345678903
         amount:
           type: number
           example: 100.11
-    WithdrawalnCancel:
+    WithdrawalAndCancel:
       type: object
       required:
         - order_id
@@ -283,3 +325,23 @@ components:
         year:
           type: string
           example: "2022"
+    History:
+      type: object
+      required:
+        - userID
+        - sortBy
+        - sortOrder
+        - quantity
+      properties:
+        userID:
+          type: string
+          example: "user"
+        sortBy:
+          type: string
+          example: "date"
+        sortOrder:
+          type: string
+          example: "desc"
+        quantity:
+          type: integer
+          example: 10

@@ -1,6 +1,10 @@
 package storage
 
-import "github.com/shopspring/decimal"
+import (
+	"time"
+
+	"github.com/shopspring/decimal"
+)
 
 type getResponse struct {
 	UserId  string          `json:"user_id"`
@@ -11,4 +15,12 @@ type getResponse struct {
 type accountingData struct {
 	ServiceID string
 	Sum       decimal.Decimal
+}
+
+type historyData struct {
+	Operation     string          `json:"operation"`
+	Correspondent string          `json:"correspondent"`
+	Funds         decimal.Decimal `json:"funds"`
+	Comment       string          `json:"comment"`
+	ProcessedAt   time.Time       `json:"processedAt"`
 }

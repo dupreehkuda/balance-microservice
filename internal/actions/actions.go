@@ -7,16 +7,16 @@ import (
 )
 
 type actions struct {
-	storage i.Stored
-	logger  *zap.Logger
+	storage      i.Stored
+	logger       *zap.Logger
+	StopDeletion chan struct{}
 }
 
 // New creates new instance of actions
 func New(storage i.Stored, logger *zap.Logger) *actions {
 	return &actions{
-		storage: storage,
-		logger:  logger,
+		storage:      storage,
+		logger:       logger,
+		StopDeletion: make(chan struct{}),
 	}
 }
-
-// todo: write unit-tests

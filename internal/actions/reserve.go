@@ -8,7 +8,7 @@ import (
 
 // ReserveFunds checks for luhn and enough funds, then creates order
 func (a actions) ReserveFunds(targetID, serviceID string, orderID int, funds decimal.Decimal) error {
-	valid := luhnValid(orderID)
+	valid := i.LuhnValid(orderID)
 	if !valid {
 		return i.ErrWrongCredentials
 	}

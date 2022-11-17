@@ -1,7 +1,7 @@
-package actions
+package internal
 
-// luhnValid checks if number is luhn valid
-func luhnValid(number int) bool {
+// LuhnValid checks if number is luhn valid
+func LuhnValid(number int) bool {
 	return (number%10+checksum(number/10))%10 == 0
 }
 

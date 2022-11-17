@@ -14,13 +14,13 @@ type storage struct {
 }
 
 var schema = `
-CREATE TABLE IF NOT EXISTS "accounts" (
+CREATE TABLE IF NOT EXISTS accounts (
 	account_id text UNIQUE PRIMARY KEY,
 	funds numeric default 0,
 	on_hold numeric default 0
-	);
+);
 
-CREATE TABLE IF NOT EXISTS "orders" (
+CREATE TABLE IF NOT EXISTS orders (
 	order_id bigint UNIQUE PRIMARY KEY,
 	service_id text,
 	account_id text,
@@ -28,14 +28,25 @@ CREATE TABLE IF NOT EXISTS "orders" (
 	creation_date timestamptz,
 	processed_date timestamptz,
 	processed bool default false
-	);
+);
 
-CREATE TABLE IF NOT EXISTS "reports" (
+CREATE TABLE IF NOT EXISTS reports (
     report_id text UNIQUE PRIMARY KEY,
     report text NOT NULL
 );
 
+ CREATE TABLE IF NOT EXISTS history (
+	id SERIAL PRIMARY KEY,
+	account_id text,
+	operation text,
+	correspondent text,
+	funds numeric,
+	comment text,
+	processed_at timestamptz
+);
+
 ALTER TABLE orders ADD FOREIGN KEY (account_id) REFERENCES accounts (account_id);
+ALTER TABLE history ADD FOREIGN KEY (account_id) REFERENCES accounts (account_id)
 `
 
 // New creates a new instance of database layer and migrates it

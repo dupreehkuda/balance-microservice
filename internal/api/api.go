@@ -22,10 +22,12 @@ import (
 )
 
 type api struct {
-	handlers i.Handlers
-	logger   *zap.Logger
-	config   *configuration.Config
-	mw       i.Middleware
+	handlers     i.Handlers
+	actions      i.Actions
+	logger       *zap.Logger
+	config       *configuration.Config
+	mw           i.Middleware
+	stopDeletion chan struct{}
 }
 
 func NewByConfig() *api {
@@ -38,20 +40,25 @@ func NewByConfig() *api {
 
 	act := actions.New(store, log)
 
-	handle := handlers.New(store, act, log)
+	handle := handlers.New(act, log)
 	mware := middleware.New(log)
 
+	act.RunDeletion()
+
 	return &api{
-		handlers: handle,
-		logger:   log,
-		config:   cfg,
-		mw:       mware,
+		handlers:     handle,
+		actions:      act,
+		logger:       log,
+		config:       cfg,
+		mw:           mware,
+		stopDeletion: act.StopDeletion,
 	}
 }
 
 // Run runs the service
 func (a api) Run() {
 	serv := &http.Server{Addr: a.config.Address, Handler: a.service()}
+	a.actions.RunDeletion()
 
 	serverCtx, serverStopCtx := context.WithCancel(context.Background())
 
@@ -60,6 +67,7 @@ func (a api) Run() {
 	go func() {
 		<-sig
 
+		a.stopDeletion <- struct{}{}
 		shutdownCtx, cancel := context.WithTimeout(serverCtx, 30*time.Second)
 		defer cancel()
 
@@ -118,6 +126,8 @@ func (a api) service() http.Handler {
 
 			r.Post("/add", a.handlers.GetReportLink)
 		})
+
+		r.Post("/history", a.handlers.GetHistory)
 	})
 
 	return r
